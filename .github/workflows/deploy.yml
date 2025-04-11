@@ -35,4 +35,4 @@ jobs:
           # Update packages
           pip3 install -r requirements.txt
           # Restart app in background
-          nohup python3 app.py > flask.log 2>&1 &
+          nohup python3 app.py &
