@@ -29,10 +29,8 @@ jobs:
         username: ${{ secrets.VM_USER }}
         key: ${{ secrets.VM_SSH_KEY }}
         script: |
-          cd ~/my-flask-app
-          # Stop previous Flask app (if any)
+          cd ~/flask-app
           pkill -f "python3 app.py" || echo "No running Flask app to stop"
-          # Update packages
           pip3 install -r requirements.txt
-          # Restart app in background
-          nohup python3 app.py &
+          nohup python3 app.py > flask.log 2>&1 &
+          sleep 5
