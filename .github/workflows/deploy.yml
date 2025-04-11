@@ -2,7 +2,8 @@ name: Deploy Flask App
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -12,23 +13,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Copy files to VM
+    - name: Copy files to server
       uses: appleboy/scp-action@v0.1.4
       with:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USER }}
         key: ${{ secrets.VM_SSH_KEY }}
         source: "."
-        target: "~/my-flask-app"
+        target: "~/flask-app"
 
-    - name: Run app on VM
+    - name: Restart Flask app on server
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USER }}
         key: ${{ secrets.VM_SSH_KEY }}
         script: |
-          kill -9 $(lsof -i:5000 -t)
-          cd ~/my-flask-app
+          cd ~/flask-app
+          # Stop previous Flask app (if any)
+          pkill -f "python3 app.py" || echo "No running Flask app to stop"
+          # Update packages
           pip3 install -r requirements.txt
-          nohup python3 app.py &
+          # Restart app in background
+          nohup python3 app.py > flask.log 2>&1 &
