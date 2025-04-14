@@ -33,4 +33,4 @@ jobs:
           kill -9 $(lsof -i:5000 -t) || echo "No running Flask app to stop"
           pip3 install -r requirements.txt
           nohup python3 app.py > flask.log 2>&1 &
-          sleep 5
+
